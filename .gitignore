@@ -1,0 +1,10 @@
+*.sh
+/build
+*.json
+key*
+*.txt
+*.exe
+*.dll
+*password*
+*.txt
+*.vscode/*
