@@ -1,7 +1,7 @@
 package data
 
 import (
-	"bike_store/central_store/data/repositories"
+	"bike_store/city_store/data/repositories"
 	"bike_store/configuration"
 	"bike_store/database"
 )
@@ -9,7 +9,8 @@ import (
 type Database struct {
 	*database.BaseDatabase
 
-	Users *repositories.UserRepository
+	Bikes   *repositories.BikeRepository
+	Rentals *repositories.RentalRepositories
 }
 
 func NewDB() database.IDatabase {
@@ -21,7 +22,8 @@ func (db *Database) Configure(config *configuration.Database) error {
 		return err
 	}
 
-	db.Users = repositories.NewUserRepository(db.BaseDatabase.DB)
+	db.Bikes = repositories.NewBikeRepository(db.BaseDatabase.DB)
+	db.Rentals = repositories.NewRentalRepository(db.BaseDatabase.DB)
 
 	return nil
 }

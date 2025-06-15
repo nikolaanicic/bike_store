@@ -43,3 +43,14 @@ func (r *BaseRepository[K, T]) Create(model *T) error {
 func (r *BaseRepository[K, T]) Update(model *T) error {
 	return r.DB.Save(model).Error
 }
+
+func (r *BaseRepository[K, T]) BulkUpdate(models []*T) error {
+
+	tx := r.DB.Begin()
+	for _, model := range models {
+		if err := tx.Save(model).Error; err != nil {
+			tx.Rollback()
+		}
+	}
+	return tx.Commit().Error
+}

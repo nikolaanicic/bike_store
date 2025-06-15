@@ -9,9 +9,12 @@ import (
 
 const configPath string = "config.yaml"
 
+var CentralServerHost string = ""
+
 type Config struct {
-	Database Database `yaml:"database"`
-	Server   Server   `yaml:"server"`
+	Database          Database `yaml:"database"`
+	Server            Server   `yaml:"server"`
+	CentralServerHost string   `yaml:"central_server_host"`
 }
 
 func readFile(path string) (string, error) {
@@ -44,6 +47,8 @@ func Get() (Config, error) {
 	} else {
 		cfg.Database.Password = pass
 	}
+
+	CentralServerHost = cfg.CentralServerHost
 
 	return cfg, nil
 }

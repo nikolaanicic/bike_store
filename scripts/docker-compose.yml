@@ -1,0 +1,78 @@
+services:
+  centralstore:
+    container_name: centralstore
+    restart: always
+    build:
+      context: ..
+      dockerfile: central_store/deploy/Dockerfile
+    ports:
+      - 5000:5000
+    depends_on:
+      - centralstore_db
+    networks:
+      - centralnetwork
+      - connecting
+    secrets:
+      - centralstore_db_password
+
+  centralstore_db:
+    container_name: centralstore_db
+    image: mysql
+    restart: always
+    ports:
+      - 33006:3306
+    volumes:
+      - centralstore_db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/centralstore_db_password
+    secrets:
+      - centralstore_db_password
+    networks:
+      - centralnetwork
+
+  citystore:
+    container_name: citystore
+    restart: always
+    build:
+      context: ..
+      dockerfile: city_store/deploy/Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - citystore_db
+    networks:
+      - citynetwork
+      - connecting
+    secrets:
+      - citystore_db_password
+
+  citystore_db:
+    container_name: citystore_db
+    image: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - citystore_db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/citystore_db_password
+    secrets:
+      - citystore_db_password
+    networks:
+      - citynetwork
+
+
+secrets:
+  citystore_db_password:
+    file: ../passwords/citystore_db_password.txt
+  centralstore_db_password:
+    file: ../passwords/centralstore_db_password.txt
+
+networks:
+  centralnetwork:
+  citynetwork:
+  connecting:
+
+volumes:
+  centralstore_db_data:
+  citystore_db_data:

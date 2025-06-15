@@ -1,4 +1,4 @@
-package server
+package dto
 
 type JsonModel interface {
 	AsJson() ([]byte, error)

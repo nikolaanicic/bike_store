@@ -1,0 +1,9 @@
+database:
+  user: root
+  password: /run/secrets/centralstore_db_password
+  host: centralstore_db
+  port: 3306
+  db_name: centralstore_db
+server:
+  host: 0.0.0.0
+  port: 5000

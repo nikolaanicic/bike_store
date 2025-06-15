@@ -1,0 +1,10 @@
+database:
+  user: root
+  password: /run/secrets/citystore_db_password
+  host: citystore_db
+  port: 3306
+  db_name: citystore_db
+server:
+  host: 0.0.0.0
+  port: 8080
+central_server_host: centralstore:5000
