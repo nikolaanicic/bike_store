@@ -36,9 +36,9 @@ func rent(l *dto.RentBikeDto, db *data.Database) *dto.Status {
 	}
 
 	rental := models.Rental{
-		RentalBikeID: l.BikeID,
-		RentalUserID: l.CitizenID,
-		City:         l.City,
+		RentalBikeID:    l.BikeID,
+		RentalCitizenID: l.CitizenID,
+		City:            l.City,
 	}
 	bike.Available = false
 

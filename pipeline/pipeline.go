@@ -32,7 +32,7 @@ func New[T dto.JsonModel](path string, requestType string, handler handler.Handl
 	return &Pipeline[T]{path: path, requestType: requestType, handler: handler, database: db, middleware: middleware}
 }
 
-func (p *Pipeline[T]) executeMiddleware(r dto.JsonModel) *dto.Status {
+func (p *Pipeline[T]) executeMiddleware(r *http.Request) *dto.Status {
 	log.Info("Executing middleware for pipeline %s", p.path)
 	for _, middleware := range p.middleware {
 		if err := middleware(r); err != nil {
@@ -61,7 +61,7 @@ func (p *Pipeline[T]) Execute(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	if err := p.executeMiddleware(request); err != nil {
+	if err := p.executeMiddleware(r); err != nil {
 		packResponse(w, err)
 		return
 	}

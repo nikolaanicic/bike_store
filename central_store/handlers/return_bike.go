@@ -5,14 +5,17 @@ import (
 	"bike_store/database/models"
 	"bike_store/dto"
 	"bike_store/handler"
+	"errors"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 func return_bike(l *dto.RentBikeDto, db *data.Database) *dto.Status {
 	var user models.User
 
 	err := db.Users.GetById(l.CitizenID, &user)
-	if err == nil && user.CitizenID == l.CitizenID {
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return dto.NewStatus(http.StatusNotFound, "user doesn't exist")
 	}
 

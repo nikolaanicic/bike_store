@@ -11,7 +11,7 @@ import (
 type Application struct {
 	server        *server.Server
 	database      database.IDatabase
-	configuration *configuration.Config
+	Configuration *configuration.Config
 }
 
 func New(db database.IDatabase) *Application {
@@ -28,7 +28,7 @@ func New(db database.IDatabase) *Application {
 
 	server := server.New(cfg.Server)
 
-	return &Application{database: db, configuration: &cfg, server: server}
+	return &Application{database: db, Configuration: &cfg, server: server}
 }
 
 func (a *Application) SetPipelines(pipelines ...pipeline.IPipeline) *Application {

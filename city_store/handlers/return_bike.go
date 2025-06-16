@@ -23,7 +23,7 @@ func return_bike(l *dto.RentBikeDto, db *data.Database) *dto.Status {
 		return dto.NewStatus(http.StatusConflict, "bike is already available")
 	}
 
-	status := centralstoreclient.Client.IncrementUserActiveBikes(l)
+	status := centralstoreclient.Client.DecrementUserActiveBikes(l)
 
 	if status.Code != http.StatusOK {
 		return status
@@ -35,7 +35,7 @@ func return_bike(l *dto.RentBikeDto, db *data.Database) *dto.Status {
 	}
 
 	rental.Completed = true
-	rental.ReturnedData = time.Now()
+	rental.ReturnedDate = time.Now()
 	bike.Available = true
 
 	tx := db.DB.Begin()

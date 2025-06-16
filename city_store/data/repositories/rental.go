@@ -17,7 +17,7 @@ func NewRentalRepository(db *gorm.DB) *RentalRepositories {
 
 func (r *RentalRepositories) GetByUserAndBike(citizenID string, bikeID int) (*models.Rental, error) {
 	var rental models.Rental
-	err := r.DB.Where(&models.Rental{RentalUserID: citizenID, RentalBikeID: bikeID, Completed: false}).First(&rental).Error
+	err := r.DB.Where("RENTAL_CITIZEN_ID = ? AND RENTAL_BIKE_ID = ? AND RETURNED_DATE IS NULL", citizenID, bikeID).First(&rental).Error
 
 	return &rental, err
 }

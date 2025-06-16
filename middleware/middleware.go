@@ -1,5 +1,8 @@
 package middleware
 
-import "bike_store/dto"
+import (
+	"bike_store/dto"
+	"net/http"
+)
 
-type Middleware func(dto.JsonModel) *dto.Status
+type Middleware func(*http.Request) *dto.Status
