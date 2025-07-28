@@ -20,7 +20,7 @@ docker exec -i centralstore_db mysql -u"$CENTRALSTORE_DB_USER" -p"$CENTRALSTORE_
 
 
 echo "Starting services..."
-docker compose --verbose up -d --build centralstore
-docker compose --verbose up -d --build citystore
+docker compose --verbose up -d --pull always --build centralstore
+docker compose --verbose up -d --pull always --build citystore
 
 echo "✅ All services are up and running."
