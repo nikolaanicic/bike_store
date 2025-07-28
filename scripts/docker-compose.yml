@@ -1,10 +1,8 @@
 services:
   centralstore:
-    container_name: centralstore
+    container_name: central-store
     restart: always
-    build:
-      context: ..
-      dockerfile: central_store/deploy/Dockerfile
+    image: nikolaanicic/central_store:latest
     ports:
       - 5000:5000
     depends_on:
@@ -31,11 +29,9 @@ services:
       - centralnetwork
 
   citystore:
-    container_name: citystore
+    container_name: city-store
     restart: always
-    build:
-      context: ..
-      dockerfile: city_store/deploy/Dockerfile
+    image: nikolaanicic/city-store:latest
     ports:
       - 8080:8080
     depends_on:

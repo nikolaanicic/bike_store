@@ -6,5 +6,5 @@ import (
 )
 
 func GetPipelines(db database.IDatabase) []pipeline.IPipeline {
-	return []pipeline.IPipeline{getRegisterPipeline(db), getRentPipeline(db), getReturnPipeline(db)}
+	return []pipeline.IPipeline{getRegisterPipeline(db), getRentPipeline(db), getReturnPipeline(db), getAddBikePipeline(db)}
 }
