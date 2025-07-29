@@ -1,72 +1,93 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ns
+  name: bike-store-ns
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ns
+      app: bike-store-ns
   template:
     metadata:
       labels:
-        app: ns
+        app: bike-store-ns
     spec:
       containers:
       - name: bike-store-ns
         image: nikolaanicic/city-store
-        envFrom:
-          - configMapRef:
-              name: city-config
+        env:
+          - name: CONFIG_PATH
+            value: /etc/config/config.yaml
         ports:
           - containerPort: 8080
-      - name: citystore-db
-        image: mysql
-        envFrom:
-          - configMapRef:
-              name: city-db-config
-        ports:
-          - containerPort: 3306
         volumeMounts:
-          - name: city-config-volume
-            mountPath: /etc/config
+          - name: city-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
             readOnly: true
           - name: citystore-db-password
             mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
+            readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+
+      - name: citystore-db
+        image: mysql
+        env:
+          - name: MYSQL_ROOT_PASSWORD_FILE
+            value: /run/secrets/citystore-db-password
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
             readOnly: true
           - mountPath: /var/lib/mysql
-            name: datans 
+            name: datans
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+
       volumes:
-        - name: city-config-volume
+        - name: city-config
           configMap:
             name: city-config
-            items:
-              - key: config.yaml
-                path: config.yaml
         - name: citystore-db-password
           secret:
             secretName: citystore-db-password
         - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-ns
+
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kg
+  name: bike-store-kg
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kg
+      app: bike-store-kg
   template:
     metadata:
       labels:
-        app: kg
+        app: bike-store-kg
     spec:
       containers:
-      - name: bg
+      - name: bike-store-kg
         image: nikolaanicic/city-store
         envFrom:
           - configMapRef:
@@ -102,19 +123,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: su
+  name: bike-store-su
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: su
+      app: bike-store-su
   template:
     metadata:
       labels:
-        app: su
+        app: bike-store-su
     spec:
       containers:
-      - name: su
+      - name: bike-store-su
         image: nikolaanicic/city-store
         envFrom:
           - configMapRef:
@@ -155,11 +176,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: central
+      app: bike-store-central
   template:
     metadata:
       labels:
-        app: central
+        app: bike-store-central
     spec:
       containers:
       - name: centralstore-db

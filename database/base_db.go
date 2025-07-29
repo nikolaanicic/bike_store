@@ -4,6 +4,7 @@ import (
 	"bike_store/configuration"
 	"bike_store/log"
 	"fmt"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -23,13 +24,17 @@ func getConnString(dbConfig *configuration.Database) string {
 
 func (db *BaseDatabase) Configure(dbConfig *configuration.Database) error {
 	var err error
-	db.DB, err = gorm.Open(mysql.Open(getConnString(dbConfig)), &gorm.Config{})
 
-	if err != nil {
-		log.Fatalf("failed to initialize database connection: %v", err)
+	for i := 0; i < 5; i++ {
+		db.DB, err = gorm.Open(mysql.Open(getConnString(dbConfig)), &gorm.Config{})
+		if err == nil {
+			log.Info("connected to the database")
+			return nil
+		}
+		log.Info("failed to initialize database connection (attempt %d): %v", i+1, err)
+		time.Sleep(1 * time.Second)
 	}
 
-	log.Info("connected to the database")
-
-	return nil
+	log.Fatalf("failed to initialize database connection after 5 attempts: %v", err)
+	return err
 }

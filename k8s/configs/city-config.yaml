@@ -5,11 +5,14 @@ metadata:
   labels:
     app: creds
 data:
-  database.user: root
-  database.password: /run/secrets/citystore-db-password
-  database.host: citystore-db
-  database.port: "3306"
-  database.db_name: citystore_db
-  server.host: "0.0.0.0"
-  server.port: "8080"
-  central_server_host: centralstore:5000
+  config.yaml: |
+    database:
+      user: root
+      password: /run/secrets/citystore-db-password
+      host: citystore-db
+      port: 3306
+      db_name: citystore_db
+    server:
+      host: 0.0.0.0
+      port: 8080
+    central_server_host: "centralstore:5000"

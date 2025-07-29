@@ -5,10 +5,13 @@ metadata:
   labels:
     app: creds
 data:
-  database.user: root
-  database.password: /run/secrets/centralstore-db-password
-  database.host: centralstore-db
-  database.port: "3306"
-  database.db_name: centralstore_db
-  server.host: "0.0.0.0"
-  server.port: "5000"
+  config.yaml: |
+    database:
+      user: root
+      password: /run/secrets/centralstore-db-password
+      host: centralstore-db
+      port: 3306
+      db_name: centralstore_db
+    server:
+      host: 0.0.0.0
+      port: 5000

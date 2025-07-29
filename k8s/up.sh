@@ -1,8 +1,8 @@
 kubectl create secret generic citystore-db-password \
-  --from-file=MYSQL_ROOT_PASSWORD=../passwords/citystore_db_password.txt
+  --from-file=MYSQL_ROOT_PASSWORD_FILE=../passwords/citystore_db_password.txt
 
 kubectl create secret generic centralstore-db-password \
-  --from-file=MYSQL_ROOT_PASSWORD=../passwords/centralstore_db_password.txt
+  --from-file=MYSQL_ROOT_PASSWORD_FILE=../passwords/centralstore_db_password.txt
 
 kubectl apply -f configs/city-config.yaml
 kubectl apply -f configs/central-config.yaml
