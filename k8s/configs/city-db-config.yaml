@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: central-db-config
+  labels:
+    app: mysql
+data:
+  MYSQL_ROOT_PASSWORD_FILE: /run/secrets/citystore-db-password

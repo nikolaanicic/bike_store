@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const configPath string = "config.yaml"
+var configPath string = os.Getenv("CONFIG_PATH")
 
 var CentralServerHost string = ""
 

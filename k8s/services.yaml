@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ns-service
+spec:
+  selector:
+    app: ns
+  ports:
+    - protocol: 'TCP'
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kg-service
+spec:
+  selector:
+    app: kg
+  ports:
+    - protocol: 'TCP'
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: su-service
+spec:
+  selector:
+    app: su
+  ports:
+    - protocol: 'TCP'
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: central-service
+spec:
+  selector:
+    app: central
+  ports:
+    - protocol: 'TCP'
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---

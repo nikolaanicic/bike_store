@@ -1,0 +1,194 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ns
+  template:
+    metadata:
+      labels:
+        app: ns
+    spec:
+      containers:
+      - name: bike-store-ns
+        image: nikolaanicic/city-store
+        envFrom:
+          - configMapRef:
+              name: city-config
+        ports:
+          - containerPort: 8080
+      - name: citystore-db
+        image: mysql
+        envFrom:
+          - configMapRef:
+              name: city-db-config
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: city-config-volume
+            mountPath: /etc/config
+            readOnly: true
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            readOnly: true
+          - mountPath: /var/lib/mysql
+            name: datans 
+      volumes:
+        - name: city-config-volume
+          configMap:
+            name: city-config
+            items:
+              - key: config.yaml
+                path: config.yaml
+        - name: citystore-db-password
+          secret:
+            secretName: citystore-db-password
+        - name: datans
+          persistentVolumeClaim:
+            claimName: host-pvc-ns
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kg
+  template:
+    metadata:
+      labels:
+        app: kg
+    spec:
+      containers:
+      - name: bg
+        image: nikolaanicic/city-store
+        envFrom:
+          - configMapRef:
+              name: city-config
+        ports:
+          - containerPort: 8080
+
+
+      - name: citystore-db
+        image: mysql
+        envFrom:
+          - configMapRef:
+              name: city-db-config
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            readOnly: true
+          - mountPath: /var/lib/mysql
+            name: datakg
+
+
+      volumes:
+        - name: citystore-db-password
+          secret:
+            secretName: citystore-db-password
+        - name: datakg
+          persistentVolumeClaim:
+            claimName: host-pvc-kg
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: su
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: su
+  template:
+    metadata:
+      labels:
+        app: su
+    spec:
+      containers:
+      - name: su
+        image: nikolaanicic/city-store
+        envFrom:
+          - configMapRef:
+              name: city-config
+        ports:
+          - containerPort: 8080
+
+
+      - name: citystore-db
+        image: mysql
+        envFrom:
+          - configMapRef:
+              name: city-db-config
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            readOnly: true
+          - mountPath: /var/lib/mysql
+            name: datasu
+
+
+      volumes:
+        - name: citystore-db-password
+          secret:
+            secretName: citystore-db-password
+        - name: datasu
+          persistentVolumeClaim:
+            claimName: host-pvc-su
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bike-store-central
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: central
+  template:
+    metadata:
+      labels:
+        app: central
+    spec:
+      containers:
+      - name: centralstore-db
+        image: mysql
+        envFrom:
+          - configMapRef:
+              name: central-db-config
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: centralstore-db-password
+            mountPath: /run/secrets/centralstore-db-password
+            readOnly: true
+          - mountPath: /var/lib/mysql
+            name: datacentral
+
+      - name: bike-store-central
+        image: nikolaanicic/central_store
+        envFrom:
+          - configMapRef:
+              name: central-config
+        ports:
+          - containerPort: 5000
+
+      volumes:
+        - name: centralstore-db-password
+          secret:
+            secretName: centralstore-db-password
+        - name: datacentral
+          persistentVolumeClaim:
+            claimName: host-pvc-central
+---

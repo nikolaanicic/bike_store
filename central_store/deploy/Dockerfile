@@ -8,6 +8,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/central_store_backend ./central_st
 FROM alpine:latest AS run
 WORKDIR /app
 COPY --from=build /app/central_store_backend .
-COPY central_store/deploy/config.yaml .
 EXPOSE 5000
 CMD ["./central_store_backend"]
