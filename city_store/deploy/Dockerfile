@@ -10,18 +10,21 @@ FROM alpine:latest AS run
 ENV MYSQL_VERSION=8.0.36
 ENV MYSQL_BASE_URL=https://downloads.mysql.com/archives/get/p/23/file
 
-RUN apk add --no-cache \
-    bash \
-    curl \
-    libaio \
-    ncurses-terminfo \
-    openssl \
-    && curl -L ${MYSQL_BASE_URL}/mysql-${MYSQL_VERSION}-linux-glibc2.28-x86_64.tar.xz -o mysql.tar.xz \
+ENV MYSQL_VERSION=8.0.36
+ENV MYSQL_BASE_URL=https://downloads.mysql.com/archives/get/p/23/file
+
+RUN apk add --no-cache bash curl libaio ncurses-terminfo openssl
+
+RUN curl -L ${MYSQL_BASE_URL}/mysql-${MYSQL_VERSION}-linux-glibc2.28-x86_64.tar.xz -o mysql.tar.xz \
     && mkdir -p /opt/mysql \
     && tar -xf mysql.tar.xz --strip-components=1 -C /opt/mysql \
+    && rm mysql.tar.xz \
+    # Remove everything except the client binaries to save space
+    && rm -rf /opt/mysql/bin/mysqld /opt/mysql/bin/mysql_install_db /opt/mysql/bin/mysql_secure_installation /opt/mysql/lib/plugin /opt/mysql/share \
     && ln -s /opt/mysql/bin/mysql /usr/local/bin/mysql \
     && ln -s /opt/mysql/bin/mysqladmin /usr/local/bin/mysqladmin \
-    && rm -rf mysql.tar.xz
+    && ln -s /opt/mysql/bin/mysql_config /usr/local/bin/mysql_config \
+    && ln -s /opt/mysql/bin/mysqlshow /usr/local/bin/mysqlshow
 RUN export PATH="/opt/mysql/bin:$PATH"
 
 WORKDIR /app
