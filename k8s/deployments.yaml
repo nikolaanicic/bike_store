@@ -18,6 +18,16 @@ spec:
         env:
           - name: CONFIG_PATH
             value: /etc/config/config.yaml
+          - name: CITYSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_USER
+          - name: CITYSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_PASSWORD
         ports:
           - containerPort: 8080
         volumeMounts:
@@ -58,28 +68,6 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "1"
-
-      - name: db-migrator
-        image: nikolaanicic/db-migration-city-runner:latest
-        env:
-          - name: CITYSTORE_DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: citystore-db-creds
-                key: CITYSTORE_DB_USER
-          - name: CITYSTORE_DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: citystore-db-creds
-                key: CITYSTORE_DB_PASSWORD
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
-
       volumes:
         - name: city-config
           configMap:
