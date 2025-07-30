@@ -261,7 +261,7 @@ spec:
     spec:
       containers:
       - name: centralstore
-        image: nikolaanicic/central-store
+        image: nikolaanicic/central_store
         env:
           - name: CONFIG_PATH
             value: /etc/config/config.yaml
@@ -276,7 +276,7 @@ spec:
                 name: centralstore-db-creds
                 key: CENTRALSTORE_DB_PASSWORD
         ports:
-          - containerPort: 8080
+          - containerPort: 5000
         volumeMounts:
           - name: central-config
             mountPath: /etc/config/config.yaml
@@ -294,7 +294,7 @@ spec:
             memory: "256Mi"
             cpu: "500m"
 
-      - name: citystore-db
+      - name: centralstore-db
         image: mysql
         env:
           - name: MYSQL_ROOT_PASSWORD_FILE
@@ -316,9 +316,9 @@ spec:
             memory: "512Mi"
             cpu: "1"
       volumes:
-        - name: centralstore-config
+        - name: central-config
           configMap:
-            name: centralstore-config
+            name: central-config
         - name: centralstore-db-password
           secret:
             secretName: centralstore-db-password

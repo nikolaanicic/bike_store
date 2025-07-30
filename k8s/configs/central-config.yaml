@@ -9,7 +9,7 @@ data:
     database:
       user: root
       password: /run/secrets/centralstore-db-password
-      host: centralstore-db
+      host: localhost
       port: 3306
       db_name: centralstore_db
       migrations_path: /app/migrations/

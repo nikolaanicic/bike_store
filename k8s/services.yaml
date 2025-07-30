@@ -9,7 +9,7 @@ spec:
     - protocol: 'TCP'
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: NodePort
 ---
 
 apiVersion: v1
@@ -23,7 +23,7 @@ spec:
     - protocol: 'TCP'
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: NodePort
 ---
 
 apiVersion: v1
@@ -37,7 +37,7 @@ spec:
     - protocol: 'TCP'
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: NodePort
 ---
 
 apiVersion: v1
@@ -51,5 +51,5 @@ spec:
     - protocol: 'TCP'
       port: 5000
       targetPort: 5000
-  type: ClusterIP
+  type: NodePort
 ---
