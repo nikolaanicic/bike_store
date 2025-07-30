@@ -72,18 +72,6 @@ spec:
               secretKeyRef:
                 name: citystore-db-creds
                 key: CITYSTORE_DB_PASSWORD
-        command:
-          - /bin/sh
-          - -c
-          - |
-            echo "Waiting for citystore-db to be ready..."
-            until nc -z 127.0.0.1 3306; do
-              echo "citystore-db not ready yet, sleeping 2s..."
-              sleep 2
-            done
-            echo "citystore-db is ready! Running migrations..."
-            ./run_migrations_city.sh
-            exit
         resources:
           requests:
             memory: "64Mi"
