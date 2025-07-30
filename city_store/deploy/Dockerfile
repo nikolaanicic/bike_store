@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y curl bash mysql-client
 WORKDIR /app
 COPY --from=build /app/citystore_backend .
 COPY --from=build /app/city_store/data/migrations/1_init.up.sql .
-COPY run.sh .
+COPY city_store/deploy/run.sh .
 RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz \
   | tar xz && mv migrate /usr/local/bin/migrate
 
