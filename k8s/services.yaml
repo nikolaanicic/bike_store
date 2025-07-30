@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ns-service
+  name: bike-store-ns
 spec:
   selector:
-    app: ns
+    app: bike-store-ns
   ports:
     - protocol: 'TCP'
       port: 8080
@@ -15,10 +15,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kg-service
+  name: bike-store-kg
 spec:
   selector:
-    app: kg
+    app: bike-store-kg
   ports:
     - protocol: 'TCP'
       port: 8080
@@ -29,10 +29,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: su-service
+  name: bike-store-su
 spec:
   selector:
-    app: su
+    app: bike-store-su
   ports:
     - protocol: 'TCP'
       port: 8080
@@ -43,26 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: central-service
+  name: centralstore
 spec:
   selector:
-    app: central
+    app: centralstore
   ports:
     - protocol: 'TCP'
       port: 5000
       targetPort: 5000
   type: ClusterIP
 ---
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: citystore-db
-spec:
-  selector:
-    app: bike-store-ns
-  ports:
-    - protocol: 'TCP'
-      port: 3306
-      targetPort: 3306
-  type: ClusterIP

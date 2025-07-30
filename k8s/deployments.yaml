@@ -78,10 +78,6 @@ spec:
         - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-ns
-        - name: migrations-volume
-          configMap:
-            name: citystore-migrations-configmap 
-
 
 ---
 
@@ -102,33 +98,67 @@ spec:
       containers:
       - name: bike-store-kg
         image: nikolaanicic/city-store
-        envFrom:
-          - configMapRef:
-              name: city-config
+        env:
+          - name: CONFIG_PATH
+            value: /etc/config/config.yaml
+          - name: CITYSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_USER
+          - name: CITYSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_PASSWORD
         ports:
           - containerPort: 8080
-
+        volumeMounts:
+          - name: city-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+            readOnly: true
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
+            readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
 
       - name: citystore-db
         image: mysql
-        envFrom:
-          - configMapRef:
-              name: city-db-config
+        env:
+          - name: MYSQL_ROOT_PASSWORD_FILE
+            value: /run/secrets/citystore-db-password
         ports:
           - containerPort: 3306
         volumeMounts:
           - name: citystore-db-password
             mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
             readOnly: true
           - mountPath: /var/lib/mysql
-            name: datakg
-
-
+            name: datans
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
       volumes:
+        - name: city-config
+          configMap:
+            name: city-config
         - name: citystore-db-password
           secret:
             secretName: citystore-db-password
-        - name: datakg
+        - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-kg
 ---
@@ -150,33 +180,67 @@ spec:
       containers:
       - name: bike-store-su
         image: nikolaanicic/city-store
-        envFrom:
-          - configMapRef:
-              name: city-config
+        env:
+          - name: CONFIG_PATH
+            value: /etc/config/config.yaml
+          - name: CITYSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_USER
+          - name: CITYSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_PASSWORD
         ports:
           - containerPort: 8080
-
+        volumeMounts:
+          - name: city-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+            readOnly: true
+          - name: citystore-db-password
+            mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
+            readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
 
       - name: citystore-db
         image: mysql
-        envFrom:
-          - configMapRef:
-              name: city-db-config
+        env:
+          - name: MYSQL_ROOT_PASSWORD_FILE
+            value: /run/secrets/citystore-db-password
         ports:
           - containerPort: 3306
         volumeMounts:
           - name: citystore-db-password
             mountPath: /run/secrets/citystore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
             readOnly: true
           - mountPath: /var/lib/mysql
-            name: datasu
-
-
+            name: datans
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
       volumes:
+        - name: city-config
+          configMap:
+            name: city-config
         - name: citystore-db-password
           secret:
             secretName: citystore-db-password
-        - name: datasu
+        - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-su
 ---
@@ -184,45 +248,82 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bike-store-central
+  name: centralstore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bike-store-central
+      app: centralstore
   template:
     metadata:
       labels:
-        app: bike-store-central
+        app: centralstore
     spec:
       containers:
-      - name: centralstore-db
+      - name: centralstore
+        image: nikolaanicic/central-store
+        env:
+          - name: CONFIG_PATH
+            value: /etc/config/config.yaml
+          - name: CENTRALSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: centralstore-db-creds
+                key: CENTRALSTORE_DB_USER
+          - name: CENTRALSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: centralstore-db-creds
+                key: CENTRALSTORE_DB_PASSWORD
+        ports:
+          - containerPort: 8080
+        volumeMounts:
+          - name: central-config
+            mountPath: /etc/config/config.yaml
+            subPath: config.yaml
+            readOnly: true
+          - name: centralstore-db-password
+            mountPath: /run/secrets/centralstore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
+            readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+
+      - name: citystore-db
         image: mysql
-        envFrom:
-          - configMapRef:
-              name: central-db-config
+        env:
+          - name: MYSQL_ROOT_PASSWORD_FILE
+            value: /run/secrets/centralstore-db-password
         ports:
           - containerPort: 3306
         volumeMounts:
           - name: centralstore-db-password
             mountPath: /run/secrets/centralstore-db-password
+            subPath: MYSQL_ROOT_PASSWORD_FILE
             readOnly: true
           - mountPath: /var/lib/mysql
-            name: datacentral
-
-      - name: bike-store-central
-        image: nikolaanicic/central_store
-        envFrom:
-          - configMapRef:
-              name: central-config
-        ports:
-          - containerPort: 5000
-
+            name: datans
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
       volumes:
+        - name: centralstore-config
+          configMap:
+            name: centralstore-config
         - name: centralstore-db-password
           secret:
             secretName: centralstore-db-password
-        - name: datacentral
+        - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-central
+
 ---

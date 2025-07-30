@@ -12,6 +12,7 @@ data:
       host: centralstore-db
       port: 3306
       db_name: centralstore_db
+      migrations_path: /app/migrations/
     server:
       host: 0.0.0.0
       port: 5000
