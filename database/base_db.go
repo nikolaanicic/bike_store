@@ -8,9 +8,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v3"
+	"github.com/golang-migrate/migrate/v3/database/mysql"
+	_ "github.com/golang-migrate/migrate/v3/source/file"
 	gormmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -41,13 +41,13 @@ func createDatabaseIfNotExists(user, password, host, dbName string) error {
 
 func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPath string) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, host, dbName)
-	db, err := sql.Open("mysql", dsn)
+	ddb, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer ddb.Close()
 
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	driver, err := mysql.WithInstance(ddb, &mysql.Config{})
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPa
 		return err
 	}
 
-	err = m.Up() // applies all up migrations
+	err = m.Up()
 	if err != nil && err != migrate.ErrNoChange {
 		return err
 	}
