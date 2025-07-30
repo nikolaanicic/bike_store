@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/citystore_backend ./city_store/cmd
 
 FROM alpine:latest AS run
-RUN apt-get update && apt-get install -y curl bash mysql-client
+RUN apk add --no-cache curl bash mysql-client
 
 WORKDIR /app
 COPY --from=build /app/citystore_backend .
