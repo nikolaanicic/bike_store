@@ -3,7 +3,7 @@
 set -e
 
 echo "Waiting for CityStore DB..."
-until mysqladmin ping -h citystore-db -u"$CITYSTORE_DB_USER" -p"$CITYSTORE_DB_PASSWORD" --silent; do
+until mysqladmin ping -h localhost -u"$CITYSTORE_DB_USER" -p"$CITYSTORE_DB_PASSWORD" --silent; do
   sleep 1
 done
 
