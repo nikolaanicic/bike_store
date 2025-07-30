@@ -9,10 +9,10 @@ data:
     database:
       user: root
       password: /run/secrets/citystore-db-password
-      host: citystore-db
+      host: localhost
       port: 3306
       db_name: citystore_db
-      migrations_path: /1_init.up.sql
+      migrations_path: /app/1_init.up.sql
     server:
       host: 0.0.0.0
       port: 8080
