@@ -22,6 +22,7 @@ RUN apk add --no-cache \
     && ln -s /opt/mysql/bin/mysql /usr/local/bin/mysql \
     && ln -s /opt/mysql/bin/mysqladmin /usr/local/bin/mysqladmin \
     && rm -rf mysql.tar.xz
+RUN export PATH="/opt/mysql/bin:$PATH"
 
 WORKDIR /app
 COPY --from=build /app/citystore_backend .
