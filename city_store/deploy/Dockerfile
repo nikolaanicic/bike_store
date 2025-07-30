@@ -10,7 +10,7 @@ FROM alpine:latest AS run
 
 WORKDIR /app
 COPY --from=build /app/citystore_backend .
-COPY --from=build /app/city_store/data/migrations/1_init.up.sql /app/1_init.up.sql
+COPY --from=build /app/city_store/data/migrations/1_init.up.sql /app/migrations/1_init.up.sql
 
 EXPOSE 8080
 ENTRYPOINT ["./citystore_backend"]

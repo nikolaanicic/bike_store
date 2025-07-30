@@ -12,7 +12,7 @@ data:
       host: localhost
       port: 3306
       db_name: citystore_db
-      migrations_path: /app/1_init.up.sql
+      migrations_path: /app/migrations/
     server:
       host: 0.0.0.0
       port: 8080
