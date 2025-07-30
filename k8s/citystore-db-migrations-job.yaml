@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: citystore-db-migrator-job
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: busybox
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "Waiting for citystore-db to be ready..."
+            until nc -z citystore-db 3306; do
+              echo "citystore-db not ready yet, sleeping 2s..."
+              sleep 2
+            done
+            echo "citystore-db is ready!"
+
+      containers:
+      - name: db-migration-city-runner
+        image: nikolaanicic/db-migration-city-runner:latest
+        env:
+          - name: CITYSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-secret
+                key: CITYSTORE_DB_USER
+          - name: CITYSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-secret
+                key: CITYSTORE_DB_PASSWORD
+      restartPolicy: OnFailure

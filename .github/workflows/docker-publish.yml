@@ -33,3 +33,20 @@ jobs:
           file: ./city_store/deploy/Dockerfile
           push: true
           tags: nikolaanicic/city-store:latest
+
+      - name: Build and push City Store DB migrator Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./k8s/Dockerfile-city-migrations
+          push: true
+          tags: nikolaanicic/db-migration-city-runner:latest
+      
+      - name: Build and push Central Store DB migrator Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./k8s/Dockerfile-central-migrations
+          push: true
+          tags: nikolaanicic/db-migration-central-runner:latest
+

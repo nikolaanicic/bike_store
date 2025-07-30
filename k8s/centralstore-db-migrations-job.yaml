@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: centralstore-db-migrator-job
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-databases
+        image: busybox
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "Waiting for centralstore-db to be ready..."
+            until nc -z centralstore-db 3306; do
+              echo "centralstore-db not ready yet, sleeping 2s..."
+              sleep 2
+            done
+            echo "centralstore-db is ready!"
+
+            echo "Waiting for centralstore-db to be ready..."
+            until nc -z centralstore-db 3306; do
+              echo "centralstore-db not ready yet, sleeping 2s..."
+              sleep 2
+            done
+            echo "centralstore-db is ready!"
+
+      containers:
+      - name: centralstore-db-migrations-central-runner
+        image: nikolaanicic/db-migration-central-runner:latest
+        env:
+          - name: CENTRALSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: centralstore-db-secret
+                key: CENTRALSTORE_DB_USER
+          - name: CENTRALSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: centralstore-db-secret
+                key: CENTRALSTORE_DB_PASSWORD
+          - name: CENTRALSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: centralstore-db-secret
+                key: CENTRALSTORE_DB_PASSWORD
+      restartPolicy: OnFailure
+          
