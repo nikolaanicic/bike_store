@@ -7,7 +7,21 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/citystore_backend ./city_store/cmd
 
 FROM alpine:latest AS run
-RUN apk add --no-cache curl bash mysql-client
+ENV MYSQL_VERSION=8.0.36
+ENV MYSQL_BASE_URL=https://downloads.mysql.com/archives/get/p/23/file
+
+RUN apk add --no-cache \
+    bash \
+    curl \
+    libaio \
+    ncurses-terminfo \
+    openssl \
+    && curl -L ${MYSQL_BASE_URL}/mysql-${MYSQL_VERSION}-linux-glibc2.28-x86_64.tar.xz -o mysql.tar.xz \
+    && mkdir -p /opt/mysql \
+    && tar -xf mysql.tar.xz --strip-components=1 -C /opt/mysql \
+    && ln -s /opt/mysql/bin/mysql /usr/local/bin/mysql \
+    && ln -s /opt/mysql/bin/mysqladmin /usr/local/bin/mysqladmin \
+    && rm -rf mysql.tar.xz
 
 WORKDIR /app
 COPY --from=build /app/citystore_backend .
