@@ -5,7 +5,7 @@ RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/
   | tar xz && mv migrate /usr/local/bin/migrate
 
 COPY ../central_store/data/migrations/1_init.up.sql central_store/data/migrations/1_init.up.sql
-COPY run_migrations_central.sh run_migrations_central.sh
+COPY ./run_migrations_central.sh run_migrations_central.sh
 
 RUN chmod +x run_migrations_central.sh
 
