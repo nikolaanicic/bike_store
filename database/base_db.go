@@ -30,6 +30,7 @@ func getConnString(dbConfig *configuration.Database) string {
 func createDatabaseIfNotExists(user, password, host, dbName string, port int) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/", user, password, host, port)
 	db, err := sql.Open("mysql", dsn)
+	log.Info("trying to connect to:%s", dsn)
 
 	if err != nil {
 		return err
@@ -41,8 +42,9 @@ func createDatabaseIfNotExists(user, password, host, dbName string, port int) er
 }
 
 func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPath string, port int) error {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, dbName, port)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbName)
 	ddb, err := sql.Open("mysql", dsn)
+	log.Info("trying to connect to:%s", dsn)
 	if err != nil {
 		return err
 	}
