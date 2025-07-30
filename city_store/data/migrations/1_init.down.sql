@@ -1,2 +1,0 @@
-DROP TABLE Bikes;
-DROP TABLE Rentals;

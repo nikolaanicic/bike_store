@@ -27,6 +27,12 @@ func getConnString(dbConfig *configuration.Database) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DbName)
 }
 
+func dropDatabaseIfExists(db *sql.DB, dbName string) error {
+	query := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`;", dbName)
+	_, err := db.Exec(query)
+	return err
+}
+
 func createDatabaseIfNotExists(user, password, host, dbName string, port int) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/", user, password, host, port)
 	db, err := sql.Open("mysql", dsn)
@@ -37,6 +43,10 @@ func createDatabaseIfNotExists(user, password, host, dbName string, port int) er
 	}
 	defer db.Close()
 
+	if err := dropDatabaseIfExists(db, dbName); err != nil {
+		log.Fatalf("failed to drop the db: %v", err)
+		return err
+	}
 	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
 	return err
 }
