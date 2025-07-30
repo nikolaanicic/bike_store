@@ -26,11 +26,11 @@ spec:
           - name: CITYSTORE_DB_USER
             valueFrom:
               secretKeyRef:
-                name: citystore-db-secret
+                name: citystore-db-creds
                 key: CITYSTORE_DB_USER
           - name: CITYSTORE_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: citystore-db-secret
+                name: citystore-db-creds
                 key: CITYSTORE_DB_PASSWORD
       restartPolicy: OnFailure

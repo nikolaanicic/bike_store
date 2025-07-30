@@ -33,17 +33,12 @@ spec:
           - name: CENTRALSTORE_DB_USER
             valueFrom:
               secretKeyRef:
-                name: centralstore-db-secret
+                name: centralstore-db-creds
                 key: CENTRALSTORE_DB_USER
-          - name: CENTRALSTORE_DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: centralstore-db-secret
-                key: CENTRALSTORE_DB_PASSWORD
           - name: CENTRALSTORE_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: centralstore-db-secret
+                name: centralstore-db-creds
                 key: CENTRALSTORE_DB_PASSWORD
       restartPolicy: OnFailure
           

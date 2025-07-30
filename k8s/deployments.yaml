@@ -59,6 +59,39 @@ spec:
             memory: "512Mi"
             cpu: "1"
 
+      - name: db-migrator
+        image: nikolaanicic/db-migration-city-runner:latest
+        env:
+          - name: CITYSTORE_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_USER
+          - name: CITYSTORE_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: citystore-db-creds
+                key: CITYSTORE_DB_PASSWORD
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "Waiting for citystore-db to be ready..."
+            until nc -z 127.0.0.1 3306; do
+              echo "citystore-db not ready yet, sleeping 2s..."
+              sleep 2
+            done
+            echo "citystore-db is ready! Running migrations..."
+            ./run_migrations_city.sh
+            exit
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+
       volumes:
         - name: city-config
           configMap:
@@ -69,6 +102,10 @@ spec:
         - name: datans
           persistentVolumeClaim:
             claimName: host-pvc-ns
+        - name: migrations-volume
+          configMap:
+            name: citystore-migrations-configmap 
+
 
 ---
 

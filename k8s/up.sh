@@ -22,18 +22,8 @@ kubectl apply -f configs/central-config.yaml
 kubectl apply -f configs/city-db-config.yaml
 kubectl apply -f configs/central-db-config.yaml
 kubectl apply -f volumes.yaml
-
 kubectl apply -f deployments.yaml
-
 kubectl apply -f services.yaml
-
-kubectl apply -f citystore-db-migrations-job.yaml
-kubectl apply -f centralstore-db-migrations-job.yaml
-
-
-kubectl wait --for=condition=complete job/citystore-db-migrator-job --timeout=300s
-kubectl wait --for=condition=complete job/centralstore-db-migrator-job --timeout=300s
-
 kubectl apply -f ingress.yaml
 
 echo "Starting dashboard..."
