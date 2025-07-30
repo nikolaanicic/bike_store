@@ -3,10 +3,15 @@ package database
 import (
 	"bike_store/configuration"
 	"bike_store/log"
-	"fmt"
 	"time"
 
-	"gorm.io/driver/mysql"
+	"database/sql"
+	"fmt"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	gormmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -22,11 +27,60 @@ func getConnString(dbConfig *configuration.Database) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DbName)
 }
 
+func createDatabaseIfNotExists(user, password, host, dbName string) error {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/", user, password, host) // no DB specified
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
+	return err
+}
+
+func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPath string) error {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, host, dbName)
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://"+migrationsPath,
+		dbName, driver)
+	if err != nil {
+		return err
+	}
+
+	err = m.Up() // applies all up migrations
+	if err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+	return nil
+}
+
 func (db *BaseDatabase) Configure(dbConfig *configuration.Database) error {
 	var err error
 
+	if err := createDatabaseIfNotExists(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName); err != nil {
+		log.Fatalf("failed to create the database: %v", err)
+		return err
+	}
+
+	if err := db.runMigrations(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName, dbConfig.MigrationsPath); err != nil {
+		log.Fatalf("failed to create the database: %v", err)
+		return err
+	}
+
 	for i := 0; i < 5; i++ {
-		db.DB, err = gorm.Open(mysql.Open(getConnString(dbConfig)), &gorm.Config{})
+		db.DB, err = gorm.Open(gormmysql.Open(getConnString(dbConfig)), &gorm.Config{})
 		if err == nil {
 			log.Info("connected to the database")
 			return nil

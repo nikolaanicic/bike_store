@@ -15,6 +15,7 @@ type Config struct {
 	Database          Database `yaml:"database"`
 	Server            Server   `yaml:"server"`
 	CentralServerHost string   `yaml:"central_server_host"`
+	MigrationsPath    string   `yaml:"migrations_path"`
 }
 
 func readFile(path string) (string, error) {
