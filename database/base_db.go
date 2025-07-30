@@ -27,9 +27,10 @@ func getConnString(dbConfig *configuration.Database) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DbName)
 }
 
-func createDatabaseIfNotExists(user, password, host, dbName string) error {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/", user, password, host) // no DB specified
+func createDatabaseIfNotExists(user, password, host, dbName string, port int) error {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/", user, password, host, port)
 	db, err := sql.Open("mysql", dsn)
+
 	if err != nil {
 		return err
 	}
@@ -39,8 +40,8 @@ func createDatabaseIfNotExists(user, password, host, dbName string) error {
 	return err
 }
 
-func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPath string) error {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, host, dbName)
+func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPath string, port int) error {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, dbName, port)
 	ddb, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
@@ -69,12 +70,12 @@ func (db *BaseDatabase) runMigrations(user, password, host, dbName, migrationsPa
 func (db *BaseDatabase) Configure(dbConfig *configuration.Database) error {
 	var err error
 
-	if err := createDatabaseIfNotExists(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName); err != nil {
+	if err := createDatabaseIfNotExists(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName, dbConfig.Port); err != nil {
 		log.Fatalf("failed to create the database: %v", err)
 		return err
 	}
 
-	if err := db.runMigrations(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName, dbConfig.MigrationsPath); err != nil {
+	if err := db.runMigrations(dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.DbName, dbConfig.MigrationsPath, dbConfig.Port); err != nil {
 		log.Fatalf("failed to create the database: %v", err)
 		return err
 	}
