@@ -1,9 +1,12 @@
 FROM golang:1.22 AS build
+RUN apt-get update && apt-get install -y curl bash mysql-client
+
 WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN apk add --no-cache curl bash mysql-client
+
+
 RUN chmod +x city_store/deploy/run_migrations_city.sh
 RUN city_store/deploy/run_migrations_city.sh
 
@@ -14,7 +17,6 @@ WORKDIR /app
 COPY --from=build /app/citystore_backend .
 EXPOSE 8080
 CMD ["./citystore_backend"]
-
 
 
 RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz \
